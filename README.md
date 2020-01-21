@@ -1,16 +1,29 @@
-# flutter_starter_project
+# Flutter App Template
 
-A new Flutter project.
+_This is not intended to be a complete Flutter project, though it should build and install on any device with no further configuration._
 
-## Getting Started
+Instead, this is intended to be a jumping-off point for new Flutter projects, particularly those for ActionSprout, Inc.
 
-This project is a starting point for a Flutter application.
+## Installation
 
-A few resources to get you started if this is your first Flutter project:
+Installing the template itself is as simple as _forking_ this repo to a new repository, then cloning that repository to your machine. In addition, the following tools are expected to be installed (and whose installation instructions are out of scope for this README):
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- Dart 2.7
+- Flutter 1.12.13
+- Make [This repo was created with GNU Make 3.81 in mind, but other versions may work.]
+- Git
+- Ripgrep
+- Entr
+- `protoc` and `protoc-gen-dart`, if configuring with Protobuf generation in mind.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+NOTE: As this template evolves, it is expected to track the latest Stable channel version of all of the above tools.
+
+## Usage
+
+While the Template itself should build and run, there are many fields you'll want to customize to your own project's needs. To do so, run the included `start_here` script, in the root directory:
+
+```
+$ ./start_here
+```
+
+From there, `make help` provides a high-level overview of the available Make targets.
