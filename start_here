@@ -12,6 +12,7 @@ echo -n "Description (optional): "
 read -r project_description
 
 rm -rf "$project_root/android/app/src/main/kotlin/com/example"
+mv pubspec.yaml template.pubspec.yaml
 
 flutter create --project-name "$project_name" \
   --org "$project_prefix" \
@@ -22,6 +23,8 @@ flutter create --project-name "$project_name" \
 sed -i '' "s/#{name}/$project_name/" template.pubspec.yaml
 sed -i '' "s/#{description}/$project_description/" template.pubspec.yaml
 mv template.pubspec.yaml pubspec.yaml
+
+mkdir -p assets lib/screens lib/components lib/gen lib/state test_driver
 
 git remote add upstream git@github.com:ActionSprout/flutter-app-template.git
 git add "$project_root"
