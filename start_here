@@ -19,12 +19,14 @@ mv pubspec.yaml template.pubspec.yaml
 flutter create --project-name "$project_name" \
   --org "$project_prefix" \
   --description "$project_description" \
-  --overwrite \
+  --no-pub --overwrite \
   "$project_root"
 
 sed -i '' "s/#{name}/$project_name/" template.pubspec.yaml
 sed -i '' "s/#{description}/$project_description/" template.pubspec.yaml
 mv template.pubspec.yaml pubspec.yaml
+
+flutter pub get
 
 if [[ -n "$protobuf_source" ]]; then
   sed -i '' "s,#{pb_line},," Makefile
