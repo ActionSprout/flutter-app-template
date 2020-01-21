@@ -19,6 +19,10 @@ flutter create --project-name "$project_name" \
   --overwrite \
   "$project_root"
 
+sed -i '' "s/#{name}/$project_name/" template.pubspec.yaml
+sed -i '' "s/#{description}/$project_description/" template.pubspec.yaml
+mv template.pubspec.yaml pubspec.yaml
+
 git remote add upstream git@github.com:ActionSprout/flutter-app-template.git
 git add "$project_root"
 
