@@ -4,14 +4,10 @@ IFS=$'\n\t'
 
 project_root=$(dirname "${BASH_SOURCE[@]}")
 
-echo -n "Project Name: "
-read -r project_name
-echo -n "Bundle Prefix (e.g. com.example): "
-read -r project_prefix
-echo -n "Description (optional): "
-read -r project_description
-echo -n ".proto directory (optional): "
-read -r protobuf_source
+read -r -p "Project Name: " project_name
+read -r -p "Bundle Prefix (e.g. com.example): " project_prefix
+read -r -p "Description (optional): " project_description
+read -re -p ".proto directory (optional): " protobuf_source
 
 rm -rf "$project_root/android/app/src/main/kotlin/com/example"
 mv pubspec.yaml template.pubspec.yaml
