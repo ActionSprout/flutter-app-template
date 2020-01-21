@@ -12,6 +12,7 @@ Installing the template itself is as simple as _forking_ this repo to a new repo
 - Flutter 1.12.13
 - Make [This repo was created with GNU Make 3.81 in mind, but other versions may work.]
 - Git
+- Git Large File Storage
 - Ripgrep
 - Entr
 - `protoc` and `protoc-gen-dart`, if configuring with Protobuf generation in mind.
