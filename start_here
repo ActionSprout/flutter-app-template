@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+project_root=$(dirname "${BASH_SOURCE[@]}")
+
+echo -n "Project Name: "
+read -r project_name
+echo -n "Bundle Prefix (e.g. com.example): "
+read -r project_prefix
+echo -n "Description (optional): "
+read -r project_description
+
+rm -rf "$project_root/android/app/src/main/kotlin/com/example"
+
+flutter create --project-name "$project_name" \
+  --org "$project_prefix" \
+  --description "$project_description" \
+  --overwrite \
+  "$project_root"
+
+git remote add upstream git@github.com:ActionSprout/flutter-app-template.git
+git add "$project_root"
+
+cat <<EOF
+To finish setting up, review the changes the start_here script has made
+(git diff --cached), and update source control.
+
+The project template has been added as the "upstream" git remote. To update
+this project in the future, pull the latest and merge as necessary (git pull upstream master).
+EOF
