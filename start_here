@@ -10,6 +10,8 @@ echo -n "Bundle Prefix (e.g. com.example): "
 read -r project_prefix
 echo -n "Description (optional): "
 read -r project_description
+echo -n ".proto directory (optional): "
+read -r protobuf_source
 
 rm -rf "$project_root/android/app/src/main/kotlin/com/example"
 mv pubspec.yaml template.pubspec.yaml
@@ -23,6 +25,13 @@ flutter create --project-name "$project_name" \
 sed -i '' "s/#{name}/$project_name/" template.pubspec.yaml
 sed -i '' "s/#{description}/$project_description/" template.pubspec.yaml
 mv template.pubspec.yaml pubspec.yaml
+
+if [[ -n "$protobuf_source" ]]; then
+  sed -i '' "s,#{pb_line},," Makefile
+  sed -i '' "s,#{pb_source},$protobuf_source," Makefile
+else
+  sed -i '' "s,.*#{pb_.*,," Makefile
+fi
 
 mkdir -p assets lib/screens lib/components lib/gen lib/state test_driver
 
