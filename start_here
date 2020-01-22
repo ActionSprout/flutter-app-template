@@ -24,12 +24,14 @@ mv template.pubspec.yaml pubspec.yaml
 
 flutter pub get
 
-if [[ -n "$protobuf_source" ]]; then
-  sed -i '' "s,#{pb_line},," Makefile
-  sed -i '' "s,#{pb_source},$protobuf_source," Makefile
-else
-  sed -i '' "s,.*#{pb_.*,," Makefile
-fi
+for file in $(rg --files-with-matches "#{pb_line}"); do
+  if [[ -n "$protobuf_source" ]]; then
+    sed -i '' "s,#{pb_line},," "$file"
+    sed -i '' "s,#{pb_source},$protobuf_source," "$file"
+  else
+    sed -i '' "s,.*#{pb_.*,," "$file"
+  fi
+done
 
 mkdir -p assets lib/screens lib/components lib/gen lib/state test_driver
 
