@@ -5,4 +5,5 @@ IFS=$'\n\t'
 gem install fastlane
 gem install cocoapods
 
-flutter doctor
+flutter --suppress-analytics doctor
+dart --disable-analytics

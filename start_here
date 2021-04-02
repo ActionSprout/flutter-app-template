@@ -37,7 +37,7 @@ git checkout lib/main.dart
 rm test/widget_test.dart
 rmdir test
 
-flutter pub get
+flutter --suppress-analytics pub get
 
 git remote add upstream git@github.com:ActionSprout/flutter-app-template.git
 git lfs install
