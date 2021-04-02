@@ -15,16 +15,14 @@ mv pubspec.yaml template.pubspec.yaml
 flutter create --project-name "$project_name" \
   --org "$project_prefix" \
   --description "$project_description" \
-  --no-pub --overwrite \
+  --no-pub --overwrite --suppress-analytics \
   "$project_root"
 
 sed -i '' "s/#{name}/$project_name/" template.pubspec.yaml
 sed -i '' "s/#{description}/$project_description/" template.pubspec.yaml
 mv template.pubspec.yaml pubspec.yaml
 
-flutter pub get
-
-for file in $(rg --files-with-matches "#{pb_line}"); do
+for file in $(rg --files-with-matches "#\{pb_line}"); do
   if [[ -n "$protobuf_source" ]]; then
     sed -i '' "s,#{pb_line},," "$file"
     sed -i '' "s,#{pb_source},$protobuf_source," "$file"
@@ -34,6 +32,12 @@ for file in $(rg --files-with-matches "#{pb_line}"); do
 done
 
 mkdir -p assets lib/screens lib/components lib/gen lib/state test_driver
+
+git checkout lib/main.dart
+rm test/widget_test.dart
+rmdir test
+
+flutter pub get
 
 git remote add upstream git@github.com:ActionSprout/flutter-app-template.git
 git lfs install
