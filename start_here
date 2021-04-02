@@ -22,7 +22,7 @@ sed -i '' "s/#{name}/$project_name/" template.pubspec.yaml
 sed -i '' "s/#{description}/$project_description/" template.pubspec.yaml
 mv template.pubspec.yaml pubspec.yaml
 
-for file in $(rg --files-with-matches "#\{pb_line}"); do
+for file in $(rg --files-with-matches "#\\{pb_line}"); do
   if [[ -n "$protobuf_source" ]]; then
     sed -i '' "s,#{pb_line},," "$file"
     sed -i '' "s,#{pb_source},$protobuf_source," "$file"
