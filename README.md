@@ -22,7 +22,7 @@ NOTE: As this template evolves, it is expected to track the latest Stable channe
 
 ## Usage
 
-While the Template itself should build and run, there are many fields you'll want to customize to your own project's needs. To do so, run the included `start_here` script, in the root directory:
+The Template itself does not build and run. To finish initializing the project, customized to your own project's needs, run the included `start_here` script in the root directory:
 
 ```
 $ ./start_here
