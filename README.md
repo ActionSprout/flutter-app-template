@@ -11,7 +11,7 @@ Installing the template itself is as simple as _forking_ this repo to a new repo
 - Dart 2.7
 - Flutter 1.12.13
 - Make [This repo was created with GNU Make 3.81 in mind, but other versions may work.]
-- Ruby 2.6.2
+- Rbenv
 - Git
 - Git Large File Storage
 - Ripgrep
@@ -22,7 +22,7 @@ NOTE: As this template evolves, it is expected to track the latest Stable channe
 
 ## Usage
 
-While the Template itself should build and run, there are many fields you'll want to customize to your own project's needs. To do so, run the included `start_here` script, in the root directory:
+The Template itself does not build and run. To finish initializing the project, customized to your own project's needs, run the included `start_here` script in the root directory:
 
 ```
 $ ./start_here

@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := all
-.PHONY: all develop format help lint test watch
+.PHONY: all clean coverage develop format help increment_build increment_minor increment_patch lint tag_version test test_driver watch
 
 # Proto-generated files and their sources #{pb_line}
-SRC_PROTO_FILES=$(wildcard #{pb_source}/*.proto)
+SRC_PROTO_FILES=$(shell find #{pb_source} -type f -name '*.proto')
 PROTO_FILES=$(patsubst #{pb_source}/%.proto,lib/models/%.pb.dart,$(SRC_PROTO_FILES))
 REQUIRED_WKT_PROTO_FILES=$(wildcard #{pb_source}/google/protobuf/*.proto)
 REQUIRED_WKT_DART_FILES=$(patsubst #{pb_source}/google/protobuf/%.proto,lib/models/google/protobuf/%.pb.dart,$(REQUIRED_WKT_PROTO_FILES))
@@ -10,7 +10,10 @@ REQUIRED_WKT_DART_FILES=$(patsubst #{pb_source}/google/protobuf/%.proto,lib/mode
 SRC_G_FILES=$(shell rg --files-with-matches "part '"'.*'"\.g\.dart'")
 G_FILES=$(patsubst %.dart,%.g.dart,$(SRC_G_FILES))
 # Dart files written by developers
-DART_FILES=$(shell find lib test -type f -name '*.dart' | rg -v '\.g')
+DART_FILES=$(shell find lib test -type f -name '*.dart' | rg -v '\.g' | rg -v '\.pb')
+# Asset files
+ANDROID_ASSET_FILES=$(shell find android/app/src/main/res)
+IOS_ASSET_FILES=$(shell find ios/Runner/Assets.xcassets)
 
 #
 # Phony targets
@@ -18,8 +21,27 @@ DART_FILES=$(shell find lib test -type f -name '*.dart' | rg -v '\.g')
 ## Build all required files. Does NOT build an app.
 all: \
 	$(G_FILES) \
-	$(PROTO_FILES) \#{pb_line}
-	$(REQUIRED_WKT_DART_FILES) \#{pb_line}
+	$(PROTO_FILES) \
+	$(REQUIRED_WKT_DART_FILES) \
+	$(ANDROID_ASSET_FILES) \
+	$(IOS_ASSET_FILES) \
+
+clean: ## Remove all build artifacts.
+	flutter clean
+	rm -rf coverage
+	rm -f test_driver/.vmservice
+	rm -f .flutter-plugins
+	rm -f .flutter-plugins-dependencies
+	rm -f .packages
+	rm -rf .idea
+	rm -rf android/.idea
+	find . | grep iml | xargs rm
+	flutter pub get
+
+coverage: ## Generate and display a code coverage report.
+	rm -rf coverage
+	make coverage/index.html
+	open coverage/index.html
 
 develop: ## Build generated files, run tests, lint and format code.
 	make all
@@ -33,14 +55,30 @@ format: ## Reformats hand-authored files.
 help: ## List available make commands.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+increment_build: ## Increment the build version of the app.
+	hori-hori bump build
+	git commit -o pubspec.yaml -m "v`hori-hori current`"
+
+increment_minor: ## Increment the minor version of the app.
+	hori-hori bump minor
+	git commit -o pubspec.yaml -m "v`hori-hori current`"
+
+increment_patch: ## Increment the patch version of the app.
+	hori-hori bump patch
+	git commit -o pubspec.yaml -m "v`hori-hori current`"
+
 lint: ## Analyze source files for potential issues.
 	flutter analyze lib test test_driver
+
+tag_version:
+	git rebase --interactive --autosquash master
+	git tag "v`hori-hori current`"
 
 test: ## Run unit tests
 	flutter test
 
 watch: ## Re-run `develop` tasks as files change.
-	rg --files | entr -c make develop
+	rg --files | entr -rc make develop
 
 #
 # File targets, roughly sorted by location
@@ -51,7 +89,41 @@ watch: ## Re-run `develop` tasks as files change.
 		--build-filter $@
 	# Pub may not actually update the modified time of the file.
 	touch $@
+
+android/app/src/main/res/%/ic_launcher.png android/app/src/main/res/%/ic_launcher_foreground.png: assets/icon-adaptive.png
+	flutter pub run flutter_launcher_icons:main
+
+coverage/index.html: coverage/lcov-filtered.info
+	genhtml -o $(@D) $<
+
+coverage/lcov.info:
+	flutter test --coverage || true
+
+coverage/lcov-filtered.info: coverage/lcov.info
+	lcov -r $< lib/env/*.dart lib/models/*.dart -o $@
+
+ios/Runner/Assets.xcassets/AppIcon.appiconset/%.png: assets/icon.png
+	flutter pub run flutter_launcher_icons:main
 #{pb_line}
 lib/models/%.pb.dart: #{pb_source}/%.proto
 	mkdir -p $(@D)#{pb_line}
 	protoc --dart_out=$(@D) --proto_path=$(<D) $<#{pb_line}
+
+play_version: pubspec.yaml
+	export BUNDLER_GEMFILE=$(BUNDLER_GEMFILE)
+	git diff-index --quiet HEAD
+	flutter build appbundle --target-platform android-arm,android-arm64
+	cd android && bundle exec fastlane alpha
+	hori-hori current > play_version
+	git add play_version
+	git commit -m "fixup! v`hori-hori current`"
+
+testflight_version: pubspec.yaml
+	export BUNDLER_GEMFILE=$(BUNDLER_GEMFILE)
+	git diff-index --quiet HEAD
+	flutter build ios --release --no-codesign
+	cd ios && bundle exec fastlane alpha
+	git checkout .
+	hori-hori current > testflight_version
+	git add testflight_version
+	git commit -m "fixup! v`hori-hori current`"

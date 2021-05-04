@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+gem install fastlane
+gem install cocoapods
+
+flutter --suppress-analytics doctor
+dart --disable-analytics
